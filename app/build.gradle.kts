@@ -64,4 +64,11 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     //Auth
     implementation(libs.firebase.auth)
+    
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+
 }
