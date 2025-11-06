@@ -1,5 +1,4 @@
 package me.camilorojas.unabshop.model
-
 data class Producto(
     val id: String? = null,
     val nombre: String = "",
