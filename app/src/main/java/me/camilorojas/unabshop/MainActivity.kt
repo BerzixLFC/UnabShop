@@ -6,11 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+// --- IMPORT CORREGIDO ---
+import me.camilorojas.unabshop.viewmodel.ProductoViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +31,7 @@ class MainActivity : ComponentActivity() {
             } else {
                 startDestination = "login"
             }
-            
+
             NavHost(
                 navController = navController,
                 startDestination = startDestination,
@@ -57,7 +60,13 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(route = "home") {
-                    HomeScreen(onClickLogout = {
+                    // --- NOMBRE CORREGIDO ---
+                    val productoViewModel: ProductoViewModel = viewModel()
+
+                    HomeScreen(
+                        // --- NOMBRE CORREGIDO ---
+                        productViewModel = productoViewModel,
+                        onClickLogout = {
                             navController.navigate("login") {
                                 popUpTo(0)}
                         }

@@ -1,12 +1,7 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        // Fuentes para los plugins
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -14,6 +9,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        // Fuentes para las dependencias (como firestore, auth, etc.)
         google()
         mavenCentral()
     }
@@ -21,4 +17,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "UnabShop"
 include(":app")
- 

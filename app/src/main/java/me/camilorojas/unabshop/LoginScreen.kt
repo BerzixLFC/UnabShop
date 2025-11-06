@@ -95,14 +95,14 @@ fun LoginScreen(
 
             // Campo de Correo Electrónico
             OutlinedTextField(
-                value = inputEmail, // Valor vacío (sin estado)
+                value = inputEmail, 
                 onValueChange = { inputEmail = it },
                 label = { Text("Correo Electrónico") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Email,
                         contentDescription = "Email",
-                        tint = Color(0xFF666666) // Color gris
+                        tint = Color(0xFF666666) 
                     )
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -123,14 +123,14 @@ fun LoginScreen(
 
             // Campo de Contraseña
             OutlinedTextField(
-                value = inputPassword, // Valor vacío (sin estado)
+                value = inputPassword, 
                 onValueChange = { inputPassword = it },
                 label = { Text("Contraseña") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
                         contentDescription = "Contraseña",
-                        tint = Color(0xFF666666) // Color gris
+                        tint = Color(0xFF666666) 
                     )
                 },
                 visualTransformation = PasswordVisualTransformation(),
@@ -138,8 +138,8 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF6200EE), // Color morado
-                    unfocusedBorderColor = Color(0xFFCCCCCC) // Color gris claro
+                    focusedBorderColor = Color(0xFF6200EE), 
+                    unfocusedBorderColor = Color(0xFFCCCCCC) 
                 ),
                 supportingText = {
                 if(PassError.isNotEmpty()) {
@@ -174,7 +174,6 @@ fun LoginScreen(
                     PassError = validatePassword(inputPassword).second
 
                     if (isValidEmail && isValidPassword) {
-                        //navController.navigate("home")
                         auth.signInWithEmailAndPassword(
                             inputEmail, inputPassword
                         ).addOnCompleteListener(activity) { task ->

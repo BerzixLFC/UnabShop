@@ -50,7 +50,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,11 +60,15 @@ dependencies {
 
     //Navigation Compose
     implementation(libs.androidx.navigation.compose)
+
     //Firebase
-    implementation(platform(libs.firebase.bom))
+    implementation(platform(libs.firebase.bom)) // Ahora usa la versión estable 33.1.0
+
     //Auth
-    implementation(libs.firebase.auth)
-    implementation("com.google.firebase:firebase-firestore:24.12.0")
+    implementation(libs.firebase.auth) // El BOM 33.1.0 gestionará su versión
+
+    // --- LIMPIO ---
+    // Ya no hay líneas duplicadas ni conflictos
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.analytics)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
