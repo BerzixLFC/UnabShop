@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items 
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -32,19 +32,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import me.camilorojas.unabshop.model.Producto 
-import me.camilorojas.unabshop.viewmodel.ProductoViewModel 
+import me.camilorojas.unabshop.model.Producto
+import me.camilorojas.unabshop.viewmodel.ProductoViewModel
 
 
 
@@ -57,11 +58,7 @@ fun HomeScreen(
 
     val auth = Firebase.auth
     val user = auth.currentUser
-    
-    val nombre = productViewModel.nombre
-    val descripcion = productViewModel.descripcion
-    val precio = productViewModel.precio
-    
+
     val productos by productViewModel.productos.collectAsState()
 
     Scaffold(
@@ -82,7 +79,6 @@ fun HomeScreen(
                         Icon(Icons.Filled.ShoppingCart, "Carrito")
                     }
                     IconButton(onClick = {
-                        // Esta lógica se mantiene
                         auth.signOut()
                         onClickLogout()
                     }) {
@@ -102,17 +98,17 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
                 .padding(paddingValues)
-                .padding(16.dp), // Padding general
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val userName = user?.displayName?.takeIf { it.isNotBlank() }
             Text(
-                "Hola, ${user?.email ?: "invitado"}",
+                text = "Hola, ${userName ?: user?.email ?: "invitado"}",
                 fontSize = 16.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            //ORMULARIO PARA AGREGAR PRODUCTOS
             Text(
                 "Agregar Nuevo Producto",
                 fontSize = 20.sp,
@@ -121,8 +117,8 @@ fun HomeScreen(
             )
 
             OutlinedTextField(
-                value = nombre, // Conectado al ViewModel
-                onValueChange = { productViewModel.onNameChange(it) }, // Llama al ViewModel
+                value = productViewModel.nombre,
+                onValueChange = { productViewModel.onNameChange(it) },
                 label = { Text("Nombre del Producto") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
@@ -130,8 +126,8 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = descripcion, 
-                onValueChange = { productViewModel.onDescriptionChange(it) }, 
+                value = productViewModel.descripcion,
+                onValueChange = { productViewModel.onDescriptionChange(it) },
                 label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
@@ -139,8 +135,8 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = precio, 
-                onValueChange = { productViewModel.onPriceChange(it) }, 
+                value = productViewModel.precio,
+                onValueChange = { productViewModel.onPriceChange(it) },
                 label = { Text("Precio") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
@@ -149,7 +145,12 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { productViewModel.agregarProducto() }, 
+                onClick = {
+                    productViewModel.agregarProducto()
+                    productViewModel.onNameChange("")
+                    productViewModel.onDescriptionChange("")
+                    productViewModel.onPriceChange("")
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -160,7 +161,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            //LISTA DE PRODUCTOS
             Text(
                 "Mis Productos",
                 fontSize = 20.sp,
@@ -168,18 +168,16 @@ fun HomeScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // LazyColumn en vezx de "RecyclerView"
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp) 
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(productos) { producto ->
-                    ProductItem( 
+                    ProductItem(
                         producto = producto,
                         onDelete = {
-                            // SE ASEGURA DE QUE LA ID NO SEA NULA
                             producto.id?.let {
-                                productViewModel.eliminarProducto(it) 
+                                productViewModel.eliminarProducto(it)
                             }
                         }
                     )
@@ -206,13 +204,13 @@ fun ProductItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.weight(1f)) { 
+            Column(modifier = Modifier.weight(1f)) {
                 Text(producto.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Text(producto.descripcion, fontSize = 14.sp, color = Color.Gray)
                 Text(
                     text = "$ ${producto.precio}",
                     fontSize = 16.sp,
-                    color = Color(0xFF00C853), 
+                    color = Color(0xFF00C853),
                     fontWeight = FontWeight.SemiBold
                 )
             }

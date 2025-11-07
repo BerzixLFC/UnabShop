@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.camilorojas.unabshop.model.Producto
+// --- ¡IMPORTANTE! NECESITAMOS ESTE IMPORT ---
+import kotlinx.coroutines.tasks.await
 
 class ProductoViewModel : ViewModel() {
     private val TAG = "ProductViewModel"
@@ -22,17 +24,15 @@ class ProductoViewModel : ViewModel() {
     val productos = _productos.asStateFlow()
 
     // ESTADO DEL FORMULARIO
-    
     var nombre by mutableStateOf("")
     var descripcion by mutableStateOf("")
     var precio by mutableStateOf("")
 
-    // Cuando el ViewModel se inicia, llamamos a obtenerProductos
     init {
         obtenerProductos()
     }
 
-    // ACTUALIZAR ESTADO FORMULARIo
+    // ACTUALIZAR ESTADO FORMULARIO
     fun onNameChange(text: String) {
         nombre = text
     }
@@ -42,20 +42,15 @@ class ProductoViewModel : ViewModel() {
     }
 
     fun onPriceChange(text: String) {
-        if (text.isEmpty() || text.toDoubleOrNull() != null) { // Validación solo números (o un campo vacío)
+        if (text.isEmpty() || text.toDoubleOrNull() != null) { // Validación solo números
             precio = text
         }
     }
-    
-    //LÓGICA DE FIRESTOR
-    
-    /**
-     * 1. LISTAR Productos
-     * (Basado en el snippet "Listar productos" de la tarea)
-     * Usamos addSnapshotListener para obtener actualizaciones en tiempo real.
-     */
+
+    //LÓGICA DE FIRESTORE
+
+    //LISTAR OBJETOS
     private fun obtenerProductos() {
-        // viewModelScope es para corutinas atadas al ciclo de vida del ViewModel
         viewModelScope.launch {
             db.collection("productos")
                 .addSnapshotListener { snapshot, e ->
@@ -63,15 +58,10 @@ class ProductoViewModel : ViewModel() {
                         Log.w(TAG, "Listen failed.", e)
                         return@addSnapshotListener
                     }
-
                     if (snapshot != null) {
-                        // Este es el mapeo clave, como sugiere el snippet de la tarea:
-                        // Mapeamos los documentos, convertimos cada uno a objeto Producto
-                        // y usamos .copy(id = doc.id) para insertar manualmente el ID.
                         val listaProductos = snapshot.map { doc ->
                             doc.toObject(Producto::class.java).copy(id = doc.id)
                         }
-                        // Actualizamos nuestro StateFlow, lo que refrescará la UI
                         _productos.value = listaProductos
                         Log.d(TAG, "Productos actualizados: ${listaProductos.size}")
                     }
@@ -80,16 +70,12 @@ class ProductoViewModel : ViewModel() {
     }
 
     //AGREGAR PRODUCTOS
-    
     fun agregarProducto() {
         val precioDouble = precio.toDoubleOrNull() ?: 0.0
-
-        // Validación simple
         if (nombre.isBlank() || descripcion.isBlank() || precioDouble == 0.0) {
             Log.w(TAG, "No se puede agregar: campos inválidos")
             return
         }
-        
         val nuevoProducto = Producto(
             nombre = nombre,
             descripcion = descripcion,
@@ -97,23 +83,19 @@ class ProductoViewModel : ViewModel() {
         )
 
         viewModelScope.launch {
-            db.collection("productos")
-                .add(nuevoProducto)
-                .addOnSuccessListener {
-                    Log.d(TAG, "Producto añadido con ID: ${it.id}")
-                    // Limpiamos el formulario después de agregar
-                    nombre = ""
-                    descripcion = ""
-                    precio = ""
-                }
-                .addOnFailureListener { e ->
-                    Log.w(TAG, "Error añadiendo producto", e)
-                }
+            try {
+                val documentReference = db.collection("productos")
+                    .add(nuevoProducto)
+                    .await()
+                Log.d(TAG, "Producto añadido con ID: ${documentReference.id}")
+
+            } catch (e: Exception) {
+                Log.w(TAG, "Error añadiendo producto", e)
+            }
         }
     }
 
     //ELIMINAR PRODUCTOS
-    
     fun eliminarProducto(productoId: String) {
         if (productoId.isBlank()) {
             Log.w(TAG, "ID de producto inválido para eliminar")
@@ -121,14 +103,14 @@ class ProductoViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            db.collection("productos").document(productoId)
-                .delete()
-                .addOnSuccessListener {
-                    Log.d(TAG, "Producto eliminado exitosamente")
-                }
-                .addOnFailureListener { e ->
-                    Log.w(TAG, "Error eliminando producto", e)
-                }
+            try {
+                db.collection("productos").document(productoId)
+                    .delete()
+                    .await()
+                Log.d(TAG, "Producto eliminado exitosamente")
+            } catch (e: Exception) {
+                Log.w(TAG, "Error eliminando producto", e)
+            }
         }
     }
 }

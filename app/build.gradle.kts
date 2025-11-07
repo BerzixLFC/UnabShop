@@ -62,13 +62,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     //Firebase
-    implementation(platform(libs.firebase.bom)) // Ahora usa la versión estable 33.1.0
+    implementation(platform(libs.firebase.bom)) 
 
     //Auth
-    implementation(libs.firebase.auth) // El BOM 33.1.0 gestionará su versión
-
-    // --- LIMPIO ---
-    // Ya no hay líneas duplicadas ni conflictos
+    implementation(libs.firebase.auth) 
+    
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.analytics)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
